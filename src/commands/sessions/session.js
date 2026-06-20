@@ -3,7 +3,7 @@ const Session = require('../../database/models/Session');
 const { getConfig } = require('../../config/configManager');
 const { hasAnyConfiguredRole } = require('../../utils/permissions');
 const { successPanel, errorPanel, infoPanel, panelPayload } = require('../../utils/ui');
-const { buildVotePanel } = require('../../modules/sessions');
+const { buildStartupPanel, buildVotePanel } = require('../../modules/sessions');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -43,16 +43,14 @@ async function startSession(interaction) {
     channelId: channel.id
   });
 
-  const ping = config.sessions.startupPingRole ? `<@&${config.sessions.startupPingRole}>\n\n` : '';
-  const message = await channel.send(panelPayload({
-    title: 'Server Startup',
-    description: `${ping}${config.sessions.messages.startup}`,
-    status: 'session',
-    fields: [
-      { name: 'Host', value: `${interaction.user}`, inline: true },
-      { name: 'Session ID', value: session.id, inline: true }
-    ]
-  }));
+  if (config.sessions.startupPingRole) {
+    await channel.send({
+      content: `<@&${config.sessions.startupPingRole}>`,
+      allowedMentions: { roles: [config.sessions.startupPingRole] }
+    }).catch(() => null);
+  }
+
+  const message = await channel.send(buildStartupPanel(session, interaction.user));
 
   session.messageId = message.id;
   await session.save();
