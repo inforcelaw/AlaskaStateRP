@@ -4,6 +4,7 @@ const { errorPanel } = require('../utils/ui');
 const { handleTicketSelect, handleTicketButton } = require('../modules/tickets');
 const { handleLoaButton } = require('../modules/loa');
 const { handleSessionButton } = require('../modules/sessions');
+const { handleSuggestionButton } = require('../modules/suggestions');
 
 module.exports = {
   name: Events.InteractionCreate,
@@ -25,6 +26,7 @@ module.exports = {
         if (interaction.customId.startsWith('ticket:')) return handleTicketButton(interaction);
         if (interaction.customId.startsWith('loa:')) return handleLoaButton(interaction);
         if (interaction.customId.startsWith('session:')) return handleSessionButton(interaction);
+        if (interaction.customId.startsWith('suggest:')) return handleSuggestionButton(interaction);
       }
     } catch (error) {
       const name = interaction.isChatInputCommand() ? `/${interaction.commandName}` : interaction.customId || 'interaction';
