@@ -38,6 +38,8 @@ const ConfigSchema = z.object({
     allowScheduledSessions: z.boolean().default(true),
     startupPingRole: z.string().optional().default(''),
     votePingRole: z.string().optional().default(''),
+    quickJoinUrl: z.string().optional().default(''),
+    quickJoinLabel: z.string().optional().default('Quick Join'),
     messages: z.object({
       startup: z.string().min(1),
       shutdown: z.string().min(1),
