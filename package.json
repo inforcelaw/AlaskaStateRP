@@ -1,0 +1,30 @@
+{
+  "name": "alaska-state-rp-bot",
+  "version": "0.1.0-base",
+  "description": "Custom Discord roleplay management bot for Alaska State Roleplay.",
+  "main": "src/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "deploy": "node src/deploy-commands.js"
+  },
+  "keywords": [
+    "discord",
+    "discord.js",
+    "roleplay",
+    "erlc",
+    "mongodb"
+  ],
+  "author": "inforcelaw",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "dependencies": {
+    "discord.js": "^14.19.3",
+    "dotenv": "^16.5.0",
+    "mongoose": "^8.16.0",
+    "zod": "^3.25.64"
+  }
+}
