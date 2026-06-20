@@ -40,6 +40,25 @@ function voteButtonRow(sessionId) {
   );
 }
 
+function startupButtonRows() {
+  const config = getConfig();
+  const rows = [];
+  const quickJoinUrl = config.sessions.quickJoinUrl || '';
+
+  if (quickJoinUrl) {
+    rows.push(
+      new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setLabel(config.sessions.quickJoinLabel || 'Quick Join')
+          .setStyle(ButtonStyle.Link)
+          .setURL(quickJoinUrl)
+      )
+    );
+  }
+
+  return rows;
+}
+
 function progressBar(current, required) {
   const totalBlocks = 10;
   const percentage = Math.min(current / Math.max(required, 1), 1);
@@ -53,6 +72,24 @@ function voterList(session) {
   const visible = session.votes.slice(0, 15).map((id) => `<@${id}>`).join(', ');
   const remaining = session.votes.length > 15 ? `\n+${session.votes.length - 15} more voter(s)` : '';
   return `${visible}${remaining}`;
+}
+
+function buildStartupPanel(session, hostUser) {
+  const config = getConfig();
+  const host = hostUser ? `${hostUser}` : `<@${session.hostId}>`;
+
+  return panelPayload({
+    title: 'Session Started',
+    description: config.sessions.messages.startup,
+    status: 'session',
+    fields: [
+      { name: 'Session Host', value: host, inline: true },
+      { name: 'Status', value: 'Officially In Progress', inline: true },
+      { name: 'Server', value: config.branding.serverName, inline: true },
+      { name: 'Reminder', value: 'Roleplay realistically, follow server rules, and keep the session professional and enjoyable for everyone.' }
+    ],
+    components: startupButtonRows()
+  });
 }
 
 function buildVotePanel(session) {
@@ -91,6 +128,7 @@ async function updateSessionVoteMessage(interaction, session) {
 
 module.exports = {
   handleSessionButton,
+  buildStartupPanel,
   buildVotePanel,
   voteButtonRow,
   updateSessionVoteMessage
