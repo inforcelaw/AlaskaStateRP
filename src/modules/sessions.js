@@ -1,6 +1,7 @@
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const Session = require('../database/models/Session');
 const { getConfig } = require('../config/configManager');
-const { successPanel, errorPanel } = require('../utils/ui');
+const { successPanel, errorPanel, panelPayload } = require('../utils/ui');
 
 async function handleSessionButton(interaction) {
   const [, action, sessionId] = interaction.customId.split(':');
@@ -16,17 +17,81 @@ async function handleSessionButton(interaction) {
 
   if (alreadyVoted) {
     session.votes = session.votes.filter((id) => id !== interaction.user.id);
-    await session.save();
-    return interaction.reply(successPanel('Vote Removed', `You removed your vote. Current votes: **${session.votes.length}**`, { ephemeral: true }));
+  } else {
+    session.votes.push(interaction.user.id);
   }
 
-  session.votes.push(interaction.user.id);
   await session.save();
+  await updateSessionVoteMessage(interaction, session).catch(() => null);
 
-  const minimumVotes = getConfig().sessions.minimumVotes;
-  const readyText = session.votes.length >= minimumVotes ? '\n\n✅ Minimum votes reached.' : '';
+  const config = getConfig();
+  const readyText = session.votes.length >= config.sessions.minimumVotes ? '\n\n✅ Minimum votes reached.' : '';
+  const title = alreadyVoted ? 'Vote Removed' : 'Vote Added';
+  const description = alreadyVoted
+    ? `You removed your vote. Current votes: **${session.votes.length}/${config.sessions.minimumVotes}**${readyText}`
+    : `You voted for the session. Current votes: **${session.votes.length}/${config.sessions.minimumVotes}**${readyText}`;
 
-  return interaction.reply(successPanel('Vote Added', `You voted for the session. Current votes: **${session.votes.length}/${minimumVotes}**${readyText}`, { ephemeral: true }));
+  return interaction.reply(successPanel(title, description, { ephemeral: true }));
 }
 
-module.exports = { handleSessionButton };
+function voteButtonRow(sessionId) {
+  return new ActionRowBuilder().addComponents(
+    new ButtonBuilder().setCustomId(`session:vote:${sessionId}`).setLabel('Vote / Unvote').setStyle(ButtonStyle.Primary)
+  );
+}
+
+function progressBar(current, required) {
+  const totalBlocks = 10;
+  const percentage = Math.min(current / Math.max(required, 1), 1);
+  const filled = Math.round(percentage * totalBlocks);
+  return '█'.repeat(filled) + '░'.repeat(totalBlocks - filled);
+}
+
+function voterList(session) {
+  if (!session.votes.length) return 'No votes yet.';
+
+  const visible = session.votes.slice(0, 15).map((id) => `<@${id}>`).join(', ');
+  const remaining = session.votes.length > 15 ? `\n+${session.votes.length - 15} more voter(s)` : '';
+  return `${visible}${remaining}`;
+}
+
+function buildVotePanel(session) {
+  const config = getConfig();
+  const current = session.votes.length;
+  const required = config.sessions.minimumVotes;
+  const reached = current >= required;
+
+  return panelPayload({
+    title: reached ? 'Session Vote Ready' : 'Session Vote',
+    description: reached
+      ? 'The vote target has been reached. A session host can now start the server.'
+      : 'A session vote is active. Press the button below to vote or remove your vote.',
+    status: reached ? 'success' : 'session',
+    fields: [
+      { name: 'Host', value: `<@${session.hostId}>`, inline: true },
+      { name: 'Votes', value: `**${current}/${required}**`, inline: true },
+      { name: 'Progress', value: `${progressBar(current, required)} ${Math.min(current, required)}/${required}` },
+      { name: 'Voters', value: voterList(session) }
+    ],
+    components: [voteButtonRow(session.id)]
+  });
+}
+
+async function updateSessionVoteMessage(interaction, session) {
+  if (!session.channelId || !session.messageId) return;
+
+  const channel = await interaction.client.channels.fetch(session.channelId).catch(() => null);
+  if (!channel?.isTextBased()) return;
+
+  const message = await channel.messages.fetch(session.messageId).catch(() => null);
+  if (!message) return;
+
+  await message.edit(buildVotePanel(session));
+}
+
+module.exports = {
+  handleSessionButton,
+  buildVotePanel,
+  voteButtonRow,
+  updateSessionVoteMessage
+};
