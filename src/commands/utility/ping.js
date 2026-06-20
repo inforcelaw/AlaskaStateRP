@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { successEmbed } = require('../../utils/embeds');
+const { successPanel } = require('../../utils/ui');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -8,16 +8,13 @@ module.exports = {
 
   async execute(interaction, client) {
     const sent = await interaction.reply({
-      embeds: [successEmbed('Pinging...', 'Checking bot latency.')],
-      fetchReply: true,
-      ephemeral: true
+      ...successPanel('Pinging...', 'Checking bot latency.', { ephemeral: true }),
+      fetchReply: true
     });
 
     const roundtrip = sent.createdTimestamp - interaction.createdTimestamp;
     const websocket = Math.round(client.ws.ping);
 
-    return interaction.editReply({
-      embeds: [successEmbed('Pong', `Roundtrip: **${roundtrip}ms**\nWebSocket: **${websocket}ms**`)]
-    });
+    return interaction.editReply(successPanel('Pong', `Roundtrip: **${roundtrip}ms**\nWebSocket: **${websocket}ms**`));
   }
 };
