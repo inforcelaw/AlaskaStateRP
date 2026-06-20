@@ -1,8 +1,9 @@
-const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 const Session = require('../../database/models/Session');
 const { getConfig } = require('../../config/configManager');
 const { hasAnyConfiguredRole } = require('../../utils/permissions');
 const { successPanel, errorPanel, infoPanel, panelPayload } = require('../../utils/ui');
+const { buildVotePanel } = require('../../modules/sessions');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -31,12 +32,6 @@ module.exports = {
     if (subcommand === 'full') return simpleSessionPost(interaction, 'Server Full', getConfig().sessions.messages.full, 'success');
   }
 };
-
-function voteButtonRow(sessionId) {
-  return new ActionRowBuilder().addComponents(
-    new ButtonBuilder().setCustomId(`session:vote:${sessionId}`).setLabel('Vote').setStyle(ButtonStyle.Primary)
-  );
-}
 
 async function startSession(interaction) {
   const config = getConfig();
@@ -71,16 +66,18 @@ async function voteSession(interaction) {
   const session = await Session.create({ guildId: interaction.guildId, hostId: interaction.user.id, channelId: channel.id });
 
   const ping = config.sessions.votePingRole ? `<@&${config.sessions.votePingRole}>\n\n` : '';
-  const message = await channel.send(panelPayload({
-    title: 'Session Vote',
-    description: `${ping}A session vote has started. Press the button if you will join.\n\nRequired votes: **${config.sessions.minimumVotes}**`,
-    status: 'session',
-    fields: [
-      { name: 'Host', value: `${interaction.user}`, inline: true },
-      { name: 'Votes', value: '0', inline: true }
-    ],
-    components: [voteButtonRow(session.id)]
-  }));
+  const payload = buildVotePanel(session);
+  payload.components[0].data.components[0].components[0].data.label = 'Vote / Unvote';
+
+  const message = await channel.send({
+    ...payload,
+    allowedMentions: { roles: config.sessions.votePingRole ? [config.sessions.votePingRole] : [] },
+    content: undefined
+  });
+
+  if (ping) {
+    await channel.send({ content: ping.trim(), allowedMentions: { roles: [config.sessions.votePingRole] } }).catch(() => null);
+  }
 
   session.messageId = message.id;
   await session.save();
