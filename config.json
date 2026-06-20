@@ -1,0 +1,123 @@
+{
+  "branding": {
+    "serverName": "Alaska State Roleplay",
+    "shortName": "ASRP",
+    "embedColor": "#0B3D91",
+    "secondaryColor": "#7DB7FF",
+    "successColor": "#2ECC71",
+    "errorColor": "#E74C3C",
+    "footer": "Alaska State Roleplay",
+    "logoUrl": "",
+    "bannerUrl": ""
+  },
+  "roles": {
+    "management": [],
+    "admin": [],
+    "moderator": [],
+    "staff": [],
+    "sessionHost": [],
+    "ticketSupport": [],
+    "loaReviewer": [],
+    "infractionManager": [],
+    "onShift": "",
+    "onBreak": "",
+    "loa": ""
+  },
+  "channels": {
+    "botLogs": "",
+    "modLogs": "",
+    "ticketLogs": "",
+    "sessionAnnouncements": "",
+    "sessionLogs": "",
+    "staffRequests": "",
+    "loaRequests": "",
+    "infractions": "",
+    "suggestions": "",
+    "giveaways": "",
+    "erlcLogs": ""
+  },
+  "categories": {
+    "tickets": "",
+    "staffTickets": "",
+    "appeals": ""
+  },
+  "modules": {
+    "moderation": true,
+    "tickets": true,
+    "sessions": true,
+    "erlc": true,
+    "shifts": true,
+    "loa": true,
+    "infractions": true,
+    "applications": true,
+    "giveaways": true,
+    "suggestions": true,
+    "economy": false
+  },
+  "tickets": {
+    "maxOpenTicketsPerUser": 1,
+    "transcripts": true,
+    "types": [
+      {
+        "id": "general_support",
+        "label": "General Support",
+        "description": "General questions or support.",
+        "emoji": "🎫",
+        "categoryId": "",
+        "supportRoles": []
+      },
+      {
+        "id": "staff_report",
+        "label": "Staff Report",
+        "description": "Report a staff member.",
+        "emoji": "⚠️",
+        "categoryId": "",
+        "supportRoles": []
+      },
+      {
+        "id": "appeal_review",
+        "label": "Appeal / Review",
+        "description": "Appeal a punishment or request a review.",
+        "emoji": "📄",
+        "categoryId": "",
+        "supportRoles": []
+      },
+      {
+        "id": "management_contact",
+        "label": "Management Contact",
+        "description": "Speak directly with management.",
+        "emoji": "📢",
+        "categoryId": "",
+        "supportRoles": []
+      }
+    ]
+  },
+  "sessions": {
+    "minimumVotes": 5,
+    "allowScheduledSessions": true,
+    "startupPingRole": "",
+    "votePingRole": "",
+    "messages": {
+      "startup": "A server startup is now being hosted.",
+      "shutdown": "The session has now ended.",
+      "low": "The server is currently low on players. Join up!",
+      "full": "The server is now full."
+    }
+  },
+  "erlc": {
+    "apiBaseUrl": "https://api.policeroleplay.community/v1",
+    "serverKeyInEnv": true,
+    "logs": {
+      "joinLogs": true,
+      "killLogs": true,
+      "commandLogs": true,
+      "modCalls": true
+    },
+    "commandSettings": {
+      "allowCustomCommands": false,
+      "requireConfirmation": true,
+      "cooldownSeconds": 5,
+      "blockedCommands": [":shutdown", ":admin", ":unadmin"]
+    }
+  }
+}
