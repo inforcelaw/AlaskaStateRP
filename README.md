@@ -11,7 +11,7 @@ Custom Discord roleplay management bot for **Alaska State Roleplay**.
 - Slash command deploy script
 - Event loader
 - `config.json` driven settings
-- Safe config reload with `/reloadconfig`
+- Safe config reload with `/admin reloadconfig`
 - MongoDB Atlas support through Mongoose
 - Blue and white Alaska branding
 - Admin health check command
@@ -22,9 +22,9 @@ Custom Discord roleplay management bot for **Alaska State Roleplay**.
 ## Commands
 
 ```txt
-/reloadconfig
-/health
-/botinfo
+/admin reloadconfig
+/admin health
+/admin botinfo
 /ping
 ```
 
@@ -71,10 +71,15 @@ src/
 ├─ commands/
 │  ├─ admin/
 │  └─ utility/
+├─ components/
+│  ├─ buttons/
+│  ├─ menus/
+│  └─ modals/
 ├─ config/
 ├─ database/
 │  └─ models/
 ├─ events/
+├─ modules/
 └─ utils/
 ```
 
