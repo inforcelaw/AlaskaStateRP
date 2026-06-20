@@ -41,6 +41,12 @@ function formatFields(fields = []) {
     .join('\n\n');
 }
 
+function buildFlags(ephemeral = false) {
+  let flags = discord.MessageFlags.IsComponentsV2;
+  if (ephemeral && discord.MessageFlags.Ephemeral) flags |= discord.MessageFlags.Ephemeral;
+  return flags;
+}
+
 function panelPayload(options = {}) {
   const {
     title = 'Alaska State RP',
@@ -74,8 +80,7 @@ function panelPayload(options = {}) {
 
     return {
       components: [container],
-      flags: discord.MessageFlags.IsComponentsV2,
-      ephemeral
+      flags: buildFlags(ephemeral)
     };
   }
 
