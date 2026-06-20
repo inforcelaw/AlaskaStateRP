@@ -48,19 +48,16 @@ async function startSession(interaction) {
     channelId: channel.id
   });
 
-  const ping = config.sessions.startupPingRole ? `<@&${config.sessions.startupPingRole}>` : '';
-  const message = await channel.send({
-    content: ping || undefined,
-    ...panelPayload({
-      title: 'Server Startup',
-      description: config.sessions.messages.startup,
-      status: 'session',
-      fields: [
-        { name: 'Host', value: `${interaction.user}`, inline: true },
-        { name: 'Session ID', value: session.id, inline: true }
-      ]
-    })
-  });
+  const ping = config.sessions.startupPingRole ? `<@&${config.sessions.startupPingRole}>\n\n` : '';
+  const message = await channel.send(panelPayload({
+    title: 'Server Startup',
+    description: `${ping}${config.sessions.messages.startup}`,
+    status: 'session',
+    fields: [
+      { name: 'Host', value: `${interaction.user}`, inline: true },
+      { name: 'Session ID', value: session.id, inline: true }
+    ]
+  }));
 
   session.messageId = message.id;
   await session.save();
@@ -73,20 +70,17 @@ async function voteSession(interaction) {
   const channel = await getSessionChannel(interaction);
   const session = await Session.create({ guildId: interaction.guildId, hostId: interaction.user.id, channelId: channel.id });
 
-  const ping = config.sessions.votePingRole ? `<@&${config.sessions.votePingRole}>` : '';
-  const message = await channel.send({
-    content: ping || undefined,
-    ...panelPayload({
-      title: 'Session Vote',
-      description: `A session vote has started. Press the button if you will join.\n\nRequired votes: **${config.sessions.minimumVotes}**`,
-      status: 'session',
-      fields: [
-        { name: 'Host', value: `${interaction.user}`, inline: true },
-        { name: 'Votes', value: '0', inline: true }
-      ],
-      components: [voteButtonRow(session.id)]
-    })
-  });
+  const ping = config.sessions.votePingRole ? `<@&${config.sessions.votePingRole}>\n\n` : '';
+  const message = await channel.send(panelPayload({
+    title: 'Session Vote',
+    description: `${ping}A session vote has started. Press the button if you will join.\n\nRequired votes: **${config.sessions.minimumVotes}**`,
+    status: 'session',
+    fields: [
+      { name: 'Host', value: `${interaction.user}`, inline: true },
+      { name: 'Votes', value: '0', inline: true }
+    ],
+    components: [voteButtonRow(session.id)]
+  }));
 
   session.messageId = message.id;
   await session.save();
