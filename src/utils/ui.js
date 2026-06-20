@@ -47,42 +47,10 @@ function buildFlags(ephemeral = false) {
   return flags;
 }
 
-function panelPayload(options = {}) {
-  const {
-    title = 'Alaska State RP',
-    description = '',
-    fields = [],
-    status = 'info',
-    components = [],
-    ephemeral = false
-  } = options;
-
+function buildEmbedPayload({ title, description, fields, status, components, ephemeral }) {
   const config = getConfig();
-  const icon = getStatusIcon(status);
   const colour = getStatusColour(status);
-  const body = [
-    `### ${icon} ${title}`,
-    description,
-    formatFields(fields),
-    `-# ${config.branding.footer}`
-  ].filter(Boolean).join('\n\n');
-
-  if (supportsContainers()) {
-    const container = new discord.ContainerBuilder()
-      .setAccentColor(colourToNumber(colour))
-      .addTextDisplayComponents(
-        new discord.TextDisplayBuilder().setContent(body)
-      );
-
-    for (const row of components) {
-      if (row) container.addActionRowComponents(row);
-    }
-
-    return {
-      components: [container],
-      flags: buildFlags(ephemeral)
-    };
-  }
+  const icon = getStatusIcon(status);
 
   const embed = new discord.EmbedBuilder()
     .setColor(colour)
@@ -106,6 +74,52 @@ function panelPayload(options = {}) {
     components,
     ephemeral
   };
+}
+
+function panelPayload(options = {}) {
+  const {
+    title = 'Alaska State RP',
+    description = '',
+    fields = [],
+    status = 'info',
+    components = [],
+    ephemeral = false
+  } = options;
+
+  const config = getConfig();
+  const icon = getStatusIcon(status);
+  const colour = getStatusColour(status);
+  const body = [
+    `### ${icon} ${title}`,
+    description,
+    formatFields(fields),
+    `-# ${config.branding.footer}`
+  ].filter(Boolean).join('\n\n');
+
+  if (supportsContainers()) {
+    try {
+      const container = new discord.ContainerBuilder()
+        .setAccentColor(colourToNumber(colour))
+        .addTextDisplayComponents(
+          new discord.TextDisplayBuilder().setContent(body)
+        );
+
+      for (const row of components) {
+        if (row && typeof container.addActionRowComponents === 'function') {
+          container.addActionRowComponents(row);
+        }
+      }
+
+      return {
+        components: [container],
+        flags: buildFlags(ephemeral)
+      };
+    } catch {
+      return buildEmbedPayload({ title, description, fields, status, components, ephemeral });
+    }
+  }
+
+  return buildEmbedPayload({ title, description, fields, status, components, ephemeral });
 }
 
 function successPanel(title, description, options = {}) {
