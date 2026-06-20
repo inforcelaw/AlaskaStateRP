@@ -9,9 +9,9 @@ Foundation build.
 - Command loader
 - Event loader
 - `config.json` loader and validator
-- `/reloadconfig`
-- `/health`
-- `/botinfo`
+- `/admin reloadconfig`
+- `/admin health`
+- `/admin botinfo`
 - `/ping`
 - MongoDB / Mongoose connection
 - Audit log model
