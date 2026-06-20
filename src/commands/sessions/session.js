@@ -65,19 +65,14 @@ async function voteSession(interaction) {
   const channel = await getSessionChannel(interaction);
   const session = await Session.create({ guildId: interaction.guildId, hostId: interaction.user.id, channelId: channel.id });
 
-  const ping = config.sessions.votePingRole ? `<@&${config.sessions.votePingRole}>\n\n` : '';
-  const payload = buildVotePanel(session);
-  payload.components[0].data.components[0].components[0].data.label = 'Vote / Unvote';
-
-  const message = await channel.send({
-    ...payload,
-    allowedMentions: { roles: config.sessions.votePingRole ? [config.sessions.votePingRole] : [] },
-    content: undefined
-  });
-
-  if (ping) {
-    await channel.send({ content: ping.trim(), allowedMentions: { roles: [config.sessions.votePingRole] } }).catch(() => null);
+  if (config.sessions.votePingRole) {
+    await channel.send({
+      content: `<@&${config.sessions.votePingRole}>`,
+      allowedMentions: { roles: [config.sessions.votePingRole] }
+    }).catch(() => null);
   }
+
+  const message = await channel.send(buildVotePanel(session));
 
   session.messageId = message.id;
   await session.save();
