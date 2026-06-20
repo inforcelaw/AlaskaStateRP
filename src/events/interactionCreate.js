@@ -27,6 +27,7 @@ module.exports = {
         if (interaction.customId.startsWith('loa:')) return handleLoaButton(interaction);
         if (interaction.customId.startsWith('session:')) return handleSessionButton(interaction);
         if (interaction.customId.startsWith('suggest:')) return handleSuggestionButton(interaction);
+        if (interaction.customId.startsWith('giveaway:')) return require('../modules/giveaways').handleGiveawayButton(interaction);
       }
     } catch (error) {
       const name = interaction.isChatInputCommand() ? `/${interaction.commandName}` : interaction.customId || 'interaction';
