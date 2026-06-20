@@ -97,11 +97,13 @@
     "allowScheduledSessions": true,
     "startupPingRole": "",
     "votePingRole": "",
+    "quickJoinUrl": "",
+    "quickJoinLabel": "Quick Join",
     "messages": {
-      "startup": "A server startup is now being hosted.",
-      "shutdown": "The session has now ended.",
-      "low": "The server is currently low on players. Join up!",
-      "full": "The server is now full."
+      "startup": "Attention everyone, the ERLC Alaska session is now officially in progress. Please join the server, follow all server rules, and maintain realistic, professional roleplay throughout the session.",
+      "shutdown": "The session has now ended. Thank you to everyone who joined and contributed to the roleplay.",
+      "low": "The server is currently low on players. Join up and help bring the session back to life.",
+      "full": "The server is now full. Thank you for the strong turnout."
     }
   },
   "erlc": {
